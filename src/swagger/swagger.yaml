@@ -1,0 +1,291 @@
+openapi: 3.0.0
+info:
+  title: Expense Tracker API
+  description: API for managing expenses, user authentication, and generating statistics.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+servers:
+  - url: http://localhost:5000
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Expense:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for the expense
+        amount:
+          type: number
+          description: Amount spent on the expense
+        category:
+          type: string
+          description: Category of the expense
+        paymentMethod:
+          type: string
+          enum: [cash, credit]
+          description: Payment method used
+        description:
+          type: string
+          description: Brief description of the expense
+        date:
+          type: string
+          format: date
+          description: Date when the expense was made
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the expense was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the expense was last updated
+
+    ExpenseInput:
+      type: object
+      properties:
+        amount:
+          type: number
+          required: true
+        category:
+          type: string
+          required: true
+        paymentMethod:
+          type: string
+          enum: [cash, credit]
+          required: true
+        description:
+          type: string
+          required: true
+        date:
+          type: string
+          format: date
+
+  responses:
+    NotFound:
+      description: Entity not found
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/expenses:
+    get:
+      summary: Get all expenses with filtering, sorting, and pagination
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by expense category
+        - in: query
+          name: paymentMethod
+          schema:
+            type: string
+          description: Filter by payment method
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date
+          description: Filter expenses from this date
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date
+          description: Filter expenses until this date
+        - in: query
+          name: sort
+          schema:
+            type: string
+          description: Sort by fields (e.g., amount, createdAt)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of items per page
+      responses:
+        200:
+          description: A list of expenses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Expense'
+
+    post:
+      summary: Create a new expense
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseInput'
+      responses:
+        201:
+          description: Expense created successfully
+        400:
+          description: Invalid input
+
+  /api/expenses/{id}:
+    patch:
+      summary: Update an existing expense
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Expense ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseInput'
+      responses:
+        200:
+          description: Expense updated successfully
+        404:
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete an expense by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Expense ID
+      responses:
+        204:
+          description: Expense deleted successfully
+        404:
+          $ref: '#/components/responses/NotFound'
+
+  /api/expenses/stats:
+    get:
+      summary: Get expense statistics (monthly and category-wise)
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Expense statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  stats:
+                    type: object
+                    properties:
+                      monthly:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: object
+                              properties:
+                                year:
+                                  type: integer
+                                month:
+                                  type: integer
+                            totalAmount:
+                              type: number
+                            count:
+                              type: integer
+                      byCategory:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              description: Category name
+                            totalAmount:
+                              type: number
+                            count:
+                              type: integer
+
+  /api/users/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid input
+
+  /api/users/login:
+    post:
+      summary: Log in an existing user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+        401:
+          description: Unauthorized (Invalid credentials)
