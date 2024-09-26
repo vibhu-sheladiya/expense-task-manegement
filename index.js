@@ -7,10 +7,8 @@ const config = require("./src/config/config");
 const cors = require("cors");
 const routes = require("./src/routes/v1");
 const path = require("path");
-// require("./src/helpers/cron");
-// require("./src/middlewares/upload");
-// const { Server } = require("socket.io");
-// const socketIO = require('socket.io');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 const app = express();
 
 const server = http.createServer(app);
@@ -31,6 +29,11 @@ app.options("*", cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 connectDB();
+
+// Load the Swagger YAML file
+const swaggerDocument = YAML.load(path.join(__dirname, 'swagger/swagger.yaml'));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 server.listen(config.port, () => {
   console.log("server listing the port " + config.port);
