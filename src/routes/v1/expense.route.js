@@ -1,5 +1,5 @@
 const express=require('express');
-const {bookController}=require('../../controllers');
+
 const csvtojsonV2=require("csvtojson");
 const csv = require('csvtojson');
 const path = require('path');
@@ -10,33 +10,45 @@ const router=express.Router();
 
 
 
-const express = require('express');
-const expenseController = require('../controllers/expenseController');
-const { authMiddleware } = require('../middlewares/auth');
-const { checkRole } = require('../middlewares/role');
+// const express = require('express');
+const expenseController = require('../../controllers/expense.controller');
+const { authMiddleware } = require('../../middlewares/auth');
+const { checkRole } = require('../../middlewares/role');
 const multer = require('multer');
 
 const upload = multer({ dest: 'uploads/' }); // Destination folder for uploaded files
 
 // POST /api/expenses (create single expense)
-router.post('/', authMiddleware, expenseController.createExpense);
+router.post('/create-upload',
+    //  authMiddleware,
+    expenseController.createExpense);
 
 // POST /api/expenses/upload (bulk upload CSV)
-router.post('/upload', authMiddleware, upload.single('file'), expenseController.uploadExpensesCSV);
+router.post('/upload', 
+    // authMiddleware,
+     upload.single('file'), expenseController.uploadExpensesCSV);
 
 // GET /api/expenses (read expenses with filters)
-router.get('/', authMiddleware, expenseController.getExpenses);
+router.get('/',
+    //  authMiddleware, 
+     expenseController.getExpenses);
 
 // PATCH /api/expenses/:id (update expense)
-router.patch('/:id', authMiddleware, expenseController.updateExpense);
+router.patch('/:id',
+    //  authMiddleware, 
+     expenseController.updateExpense);
 
 // DELETE /api/expenses (bulk delete expenses)
-router.delete('/', authMiddleware, expenseController.deleteExpenses);
+router.delete('/', 
+    // authMiddleware, 
+    expenseController.deleteExpenses);
 
 // GET /api/expenses/stats (get expense statistics)
-router.get('/stats', authMiddleware, expenseController.getExpenseStatistics);
+router.get('/stats',
+    //  authMiddleware, 
+     expenseController.getExpenseStatistics);
 
-module.exports = router;
+// module.exports = router;
 // const storage = multer.diskStorage({
 //     destination:(req,file,cb)=>{
 //         cb(null,"./uploads");

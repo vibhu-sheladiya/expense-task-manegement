@@ -1,4 +1,4 @@
-const Expense = require('../models/Expense');
+const Expense = require('../models');
 const ErrorResponse = require('../utils/errorResponse');
 const csvParser = require('csv-parser');
 const fs = require('fs');

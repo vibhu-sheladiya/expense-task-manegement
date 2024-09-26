@@ -31,9 +31,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 connectDB();
 
 // Load the Swagger YAML file
-const swaggerDocument = YAML.load(path.join(__dirname, 'swagger/swagger.yaml'));
+// const swaggerDocument = YAML.load(path.join(__dirname, 'swagger/swagger.yaml'));
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 server.listen(config.port, () => {
   console.log("server listing the port " + config.port);
