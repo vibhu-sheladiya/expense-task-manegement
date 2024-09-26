@@ -23,10 +23,10 @@ app.use(bodyParser.json());
 
 app.use(cors());
 app.options("*", cors());
+app.use("/v1", routes);
 
 
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 connectDB();
 
