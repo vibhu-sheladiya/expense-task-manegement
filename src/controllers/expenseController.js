@@ -1,10 +1,9 @@
-const { model } = require('mongoose');
-const Expense = require('../models/expense.model');
+const Expense = require('../models/Expense');
 const parseCSV = require('../utils/csvParser');
 const validateExpense = require('../utils/validateExpense');
 
 // Add Expense
-const addExpense = async (req, res) => {
+exports.addExpense = async (req, res) => {
     try {
         const { title, amount, date, category, description, paymentMethod } = req.body;
         const user = req.user.id;
@@ -22,7 +21,7 @@ const addExpense = async (req, res) => {
 
 
 // Bulk Upload Expenses
-const bulkUpload = async (req, res) => {
+exports.bulkUpload = async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
@@ -58,7 +57,7 @@ const bulkUpload = async (req, res) => {
 
 
 // Get Expenses with Filtering and Pagination
-const getExpenses = async (req, res) => {
+exports.getExpenses = async (req, res) => {
     const { page = 1, limit = 10, category, startDate, endDate, paymentMethod } = req.query;
     const filter = {};
     if (category) filter.category = category;
@@ -79,7 +78,7 @@ const getExpenses = async (req, res) => {
 };
 
 // Update Expense
-const updateExpense = async (req, res) => {
+exports.updateExpense = async (req, res) => {
     try {
         const updatedExpense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedExpense);
@@ -89,7 +88,7 @@ const updateExpense = async (req, res) => {
 };
 
 // Delete Expense
-const deleteExpense = async (req, res) => {
+exports.deleteExpense = async (req, res) => {
     try {
         await Expense.deleteMany({ _id: { $in: req.query.ids.split(',') } });
         res.status(200).json({ message: 'Expenses deleted successfully' });
@@ -97,7 +96,3 @@ const deleteExpense = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-
-module.exports = {
-  deleteExpense,updateExpense,getExpenses,bulkUpload,addExpense
-}

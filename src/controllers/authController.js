@@ -1,8 +1,8 @@
-const User = require('../models/user.model');
+const User = require('../models/User');
 const generateToken = require('../config/jwt');
 
 // Register User
-const register = async (req, res) => {
+exports.register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
         const user = new User({ username, email, password });
@@ -14,7 +14,7 @@ const register = async (req, res) => {
 };
 
 // Login User
-const login = async (req, res) => {
+exports.login = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
@@ -27,9 +27,3 @@ const login = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-
-
-
-module.exports = {
-  register,login
-}

@@ -12,7 +12,7 @@ const router=express.Router();
 
 // const express = require('express');
 const expenseController = require('../../controllers/expense.controller');
-const { authMiddleware } = require('../../middlewares/auth');
+const { accessToken } = require('../../middlewares/auth');
 const { checkRole } = require('../../middlewares/role');
 const multer = require('multer');
 
@@ -21,12 +21,10 @@ const upload = multer({ dest: 'uploads/' }); // Destination folder for uploaded 
 // POST /api/expenses (create single expense)
 router.post('/create-upload',
     //  authMiddleware,
-    expenseController.createExpense);
+    expenseController.addExpense);
 
 // POST /api/expenses/upload (bulk upload CSV)
-router.post('/upload', 
-    // authMiddleware,
-     upload.single('file'), expenseController.uploadExpensesCSV);
+router.post('/bulk-upload',  upload.single('file'),expenseController. bulkUpload );
 
 // GET /api/expenses (read expenses with filters)
 router.get('/',
@@ -41,12 +39,12 @@ router.patch('/:id',
 // DELETE /api/expenses (bulk delete expenses)
 router.delete('/', 
     // authMiddleware, 
-    expenseController.deleteExpenses);
+    expenseController.deleteExpense);
 
 // GET /api/expenses/stats (get expense statistics)
-router.get('/stats',
-    //  authMiddleware, 
-     expenseController.getExpenseStatistics);
+// router.get('/stats',
+//     //  authMiddleware, 
+//      expenseController.getExpenseStatistics);
 
 // module.exports = router;
 // const storage = multer.diskStorage({

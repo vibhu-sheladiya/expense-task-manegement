@@ -12,7 +12,7 @@ authController.register
 
 // login user
 router.post("/login-user",
-  accessToken(),
+  // accessToken(),
   authController.login
   );
 
